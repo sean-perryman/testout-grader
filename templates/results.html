@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Grades</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    /* --- Sticky first column --- */
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        background: #fff;
+        z-index: 3;
+    }
+    table {
+        border-collapse: collapse !important;
+    }
+    table td, table th {
+        border: 1px solid #ccc !important;
+    }
+    /* --- Color-coded cell backgrounds --- */
+    td.grade-cell {
+        text-align: center;
+        font-weight: 500;
+    }
+    .grade-high   { background-color: #d4edda !important; } /* green */
+    .grade-mid    { background-color: #fff3cd !important; } /* yellow */
+    .grade-low    { background-color: #f8d7da !important; } /* red */
+    .grade-empty  { background-color: #f0f0f0 !important; color: #aaa; }
+
+    /* --- Hover highlight for rows --- */
+    tr:hover td {
+        background-color: #e9f5ff !important;
+    }
+
+    /* --- Student isolation highlight --- */
+    tr.isolated td {
+        background-color: #d0e7ff !important;
+        font-weight: 600;
+    }
+</style>
+</head>
+<body class="bg-light p-4">
+
+<h3 class="mb-3">Module Grade Summary</h3>
+
+<div class="table-responsive" id="grade-table-wrapper" style="max-height: 80vh; overflow: auto;">
+    {{ tables|safe }}
+</div>
+
+<script>
+/* === 1. COLOR CODE GRADE CELLS === */
+document.querySelectorAll("td").forEach(td => {
+    const text = td.innerText.trim();
+    if (!text.endsWith("%")) {
+        td.classList.add("grade-empty");
+        return;
+    }
+
+    const value = parseFloat(text.replace("%",""));
+    td.classList.add("grade-cell");
+
+    if (isNaN(value)) {
+        td.classList.add("grade-empty");
+    } else if (value >= 90) {
+        td.classList.add("grade-high");
+    } else if (value >= 70) {
+        td.classList.add("grade-mid");
+    } else {
+        td.classList.add("grade-low");
+    }
+});
+
+/* === 2. MAKE FIRST COLUMN STICKY === */
+document.querySelectorAll("table tr").forEach(row => {
+    const firstCell = row.querySelector("th, td");
+    if (firstCell) firstCell.classList.add("sticky-col");
+});
+
+/* === 3. STUDENT ISOLATION CLICK FEATURE === */
+let isolated = null;
+
+document.querySelectorAll("table tbody tr").forEach(row => {
+    row.addEventListener("click", () => {
+        if (isolated === row) {
+            // Restore all rows
+            document.querySelectorAll("tbody tr").forEach(r => {
+                r.style.display = "";
+                r.classList.remove("isolated");
+            });
+            isolated = null;
+        } else {
+            // Hide all other rows
+            document.querySelectorAll("tbody tr").forEach(r => {
+                if (r !== row) r.style.display = "none";
+                else r.classList.add("isolated");
+            });
+            isolated = row;
+        }
+    });
+});
+</script>
+
+</body>
+</html>
