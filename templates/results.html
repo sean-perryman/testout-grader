@@ -75,6 +75,10 @@
     {{ tables|safe }}
 </div>
 
+<div id="restore-bar">
+    <span>Hidden columns:</span>
+</div>
+
 <script>
 /* === 1. COLOR CODE GRADE CELLS === */
 document.querySelectorAll("td").forEach(td => {
@@ -163,10 +167,6 @@ headerCells.forEach((th, idx) => {
     th.addEventListener("click", () => hideColumn(idx));
 });
 </script>
-
-<div id="restore-bar">
-    <span>Hidden columns:</span>
-</div>
 
 </body>
 </html>
