@@ -40,6 +40,31 @@
         background-color: #d0e7ff !important;
         font-weight: 600;
     }
+
+    /* --- Clickable column headers --- */
+    th.hideable {
+        cursor: pointer;
+    }
+    th.hideable:hover {
+        background-color: #f8d7da !important;
+    }
+
+    /* --- Hidden-columns restore bar --- */
+    #restore-bar {
+        position: sticky;
+        bottom: 0;
+        background: #343a40;
+        color: #fff;
+        padding: 0.5rem 1rem;
+        display: none;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        z-index: 10;
+    }
+    #restore-bar.visible {
+        display: flex;
+    }
 </style>
 </head>
 <body class="bg-light p-4">
@@ -101,7 +126,47 @@ document.querySelectorAll("table tbody tr").forEach(row => {
         }
     });
 });
+/* === 4. COLUMN HIDE / SHOW === */
+const restoreBar = document.getElementById("restore-bar");
+const headerCells = document.querySelectorAll("table thead th");
+
+function updateRestoreBar() {
+    restoreBar.classList.toggle("visible", restoreBar.children.length > 1);
+}
+
+function hideColumn(colIndex) {
+    document.querySelectorAll("table tr").forEach(row => {
+        const cell = row.children[colIndex];
+        if (cell) cell.style.display = "none";
+    });
+    const btn = document.createElement("button");
+    btn.className = "btn btn-sm btn-outline-light";
+    btn.textContent = headerCells[colIndex].textContent;
+    btn.dataset.colIndex = colIndex;
+    btn.addEventListener("click", () => showColumn(colIndex, btn));
+    restoreBar.appendChild(btn);
+    updateRestoreBar();
+}
+
+function showColumn(colIndex, btn) {
+    document.querySelectorAll("table tr").forEach(row => {
+        const cell = row.children[colIndex];
+        if (cell) cell.style.display = "";
+    });
+    btn.remove();
+    updateRestoreBar();
+}
+
+headerCells.forEach((th, idx) => {
+    if (idx === 0) return; // don't allow hiding the Student column
+    th.classList.add("hideable");
+    th.addEventListener("click", () => hideColumn(idx));
+});
 </script>
+
+<div id="restore-bar">
+    <span>Hidden columns:</span>
+</div>
 
 </body>
 </html>
