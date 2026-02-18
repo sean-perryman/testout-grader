@@ -160,7 +160,7 @@ def index():
         out_df = pd.DataFrame(output_rows, columns=table_columns)
         
         # Render HTML table
-        return render_template('results.html', tables=out_df.to_html(classes='table table-striped table-sm', index=False, justify='center', border=0, escape=False), titles=table_columns)
+        return render_template('results.html', tables=out_df.to_html(classes='table table-striped table-sm', index=False, justify='center', border=0, escape=False).strip(), titles=table_columns)
     return render_template('index.html')
     
 if __name__ == '__main__':
