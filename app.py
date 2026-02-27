@@ -119,7 +119,7 @@ def index():
         # Build output rows
         output_rows = []
         for idx, row in numeric_df.iterrows():
-            student = row[student_col]
+            student = re.sub(r'\s*\(.*?\)\s*$', '', str(row[student_col])).strip()
             out_row = {'Student': student}
             for module, lists in module_cols.items():
                 # assignments average
@@ -137,7 +137,7 @@ def index():
                 else:
                     l_mean = float('nan')
                 # format with percent sign if not NaN, else blank
-                out_row[f'Module {module} Assignments'] = f"{a_mean:.2f}%" if pd.notna(a_mean) else ''
+                out_row[f'Module {module} Quizzes'] = f"{a_mean:.2f}%" if pd.notna(a_mean) else ''
                 out_row[f'Module {module} Labs'] = f"{l_mean:.2f}%" if pd.notna(l_mean) else ''
             output_rows.append(out_row)
         
@@ -149,7 +149,7 @@ def index():
 
         # First: all assignments
         for module in module_cols.keys():
-            table_columns.append(f'Module {module} Assignments')
+            table_columns.append(f'Module {module} Quizzes')
 
         # Second: all labs
         for module in module_cols.keys():
